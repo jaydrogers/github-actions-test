@@ -1,5 +1,8 @@
 name: Release
 
+env:
+  CHECKOUT_TYPE: latest-stable
+
 on:
   release:
     types: [released]

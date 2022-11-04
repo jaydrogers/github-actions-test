@@ -9,12 +9,12 @@ jobs:
       # Checkout branch (for push deployments)
       ##
       - name: Get branch name
-        if: github.event_name == 'push'
+        if: env.CHECKOUT_TYPE == 'branch'
         id: branch-name
         uses: tj-actions/branch-names@v6
 
       - uses: actions/checkout@v3
-        if: github.event_name == 'push'
+        if: env.CHECKOUT_TYPE == 'branch'
         with:
           ref: ${{ steps.branch-name.outputs.current_branch }}
       
@@ -22,18 +22,18 @@ jobs:
       # Checkout latest stable release (for production releases)
       ##
       - name: Get latest stable release
-        if: github.event_name == 'release' && github.event.action == 'released'
+        if: env.CHECKOUT_TYPE == 'latest-stable'
         id: latestrelease
         run: |
           echo "::set-output name=releasetag::$(curl --silent --header "Accept: application/vnd.github.v3.sha" "{{env.GITHUB_API_URL}}/repos/{{env.GITHUB_REPOSITORY}}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')"
 
       - name: Confirm release tag
-        if: github.event_name == 'release' && github.event.action == 'released'
+        if: env.CHECKOUT_TYPE == 'latest-stable'
         run: |
           echo "Latest Stable Release Tag: cho ${{ steps.latestrelease.outputs.releasetag }}"
         
       - name: Checkout latest stable tag
-        if: github.event_name == 'release' && github.event.action == 'released'
+        if: env.CHECKOUT_TYPE == 'latest-stable'
         uses: actions/checkout@v2
         with:
           ref: ${{ steps.latestrelease.outputs.releasetag }}

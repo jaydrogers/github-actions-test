@@ -1,5 +1,8 @@
 name: Push
 
+env:
+  CHECKOUT_TYPE: branch
+
 on:
   push:
     branches:
