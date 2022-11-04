@@ -3,6 +3,8 @@ name: Release
 on:
   release:
     types: [released]
+  schedule:
+    - cron: '0 8 * * 2'
 
 jobs:
   build:
