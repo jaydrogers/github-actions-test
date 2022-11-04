@@ -1,12 +1,11 @@
 name: Push
 
-env:
-  CHECKOUT_TYPE: branch
-
 on:
   push:
     branches:
       - main
 jobs:
+  set-checkout-type:
+    runs: CHECKOUT_TYPE=branch
   build:
     uses: ./.github/workflows/service-build.yml
