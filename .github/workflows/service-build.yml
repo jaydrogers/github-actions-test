@@ -47,3 +47,6 @@ jobs:
       ##
       - name: Echo the SHA
         run: git rev-parse --short HEAD
+      
+      - name: Echo the content of test
+        run: cat test.txt
