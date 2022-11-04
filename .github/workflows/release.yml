@@ -7,8 +7,7 @@ on:
     - cron: '0 8 * * 2'
 
 jobs:
-  set-checkout-type:
-    steps:
-      - run: CHECKOUT_TYPE=latest-stable
   build:
     uses: ./.github/workflows/service-build.yml
+    with:
+      checkout-type: latest-stable

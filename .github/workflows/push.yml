@@ -10,3 +10,5 @@ jobs:
       - run: CHECKOUT_TYPE=branch
   build:
     uses: ./.github/workflows/service-build.yml
+    with:
+      checkout-type: branch

@@ -1,5 +1,9 @@
 on:
   workflow_call:
+    inputs:
+      checkout-type:
+        required: true
+        type: string
 
 jobs:
   publish:
@@ -9,12 +13,12 @@ jobs:
       # Checkout branch (for push deployments)
       ##
       - name: Get branch name
-        if: env.CHECKOUT_TYPE == 'branch'
+        if: inputs.checkout-type == 'branch'
         id: branch-name
         uses: tj-actions/branch-names@v6
 
       - uses: actions/checkout@v3
-        if: env.CHECKOUT_TYPE == 'branch'
+        if: inputs.checkout-type  == 'branch'
         with:
           ref: ${{ steps.branch-name.outputs.current_branch }}
       
@@ -22,18 +26,18 @@ jobs:
       # Checkout latest stable release (for production releases)
       ##
       - name: Get latest stable release
-        if: env.CHECKOUT_TYPE == 'latest-stable'
+        if: inputs.checkout-type  == 'latest-stable'
         id: latestrelease
         run: |
           echo "::set-output name=releasetag::$(curl --silent --header "Accept: application/vnd.github.v3.sha" "{{env.GITHUB_API_URL}}/repos/{{env.GITHUB_REPOSITORY}}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')"
 
       - name: Confirm release tag
-        if: env.CHECKOUT_TYPE == 'latest-stable'
+        if: inputs.checkout-type  == 'latest-stable'
         run: |
           echo "Latest Stable Release Tag: cho ${{ steps.latestrelease.outputs.releasetag }}"
         
       - name: Checkout latest stable tag
-        if: env.CHECKOUT_TYPE == 'latest-stable'
+        if: inputs.checkout-type  == 'latest-stable'
         uses: actions/checkout@v2
         with:
           ref: ${{ steps.latestrelease.outputs.releasetag }}
