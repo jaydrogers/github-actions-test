@@ -1,0 +1,45 @@
+on:
+  workflow_call:
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    steps:
+      ##
+      # Checkout branch (for push deployments)
+      ##
+      - name: Get branch name
+        if: github.event_name == 'push'
+        id: branch-name
+        uses: tj-actions/branch-names@v6
+
+      - uses: actions/checkout@v3
+        if: github.event_name == 'push'
+        with:
+          ref: ${{ steps.branch-name.outputs.current_branch }}
+      
+      ##
+      # Checkout latest stable release (for production releases)
+      ##
+      - name: Get latest stable release
+        if: github.event_name == 'release' && github.event.action == 'released'
+        id: latestrelease
+        run: |
+          echo "::set-output name=releasetag::$(curl --silent --header "Accept: application/vnd.github.v3.sha" "{{env.GITHUB_API_URL}}/repos/{{env.GITHUB_REPOSITORY}}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')"
+
+      - name: Confirm release tag
+        if: github.event_name == 'release' && github.event.action == 'released'
+        run: |
+          echo "Latest Stable Release Tag: cho ${{ steps.latestrelease.outputs.releasetag }}"
+        
+      - name: Checkout latest stable tag
+        if: github.event_name == 'release' && github.event.action == 'released'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.latestrelease.outputs.releasetag }}
+
+      ##
+      # Echo the SHA
+      ##
+      - name: Echo the SHA
+        run: git rev-parse --short HEAD
