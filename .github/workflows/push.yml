@@ -7,6 +7,6 @@ on:
 jobs:
   set-checkout-type:
     steps:
-      run: CHECKOUT_TYPE=branch
+      - run: CHECKOUT_TYPE=branch
   build:
     uses: ./.github/workflows/service-build.yml

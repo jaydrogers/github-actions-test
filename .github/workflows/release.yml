@@ -9,6 +9,6 @@ on:
 jobs:
   set-checkout-type:
     steps:
-      run: CHECKOUT_TYPE=latest-stable
+      - run: CHECKOUT_TYPE=latest-stable
   build:
     uses: ./.github/workflows/service-build.yml
