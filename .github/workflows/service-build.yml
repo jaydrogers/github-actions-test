@@ -27,20 +27,20 @@ jobs:
       ##
       - name: Get latest stable release
         if: inputs.checkout-type  == 'latest-stable'
-        id: latestrelease
+        id: latest-stable-version
         run: |
-          echo "::set-output name=releasetag::$(curl --silent --header "Accept: application/vnd.github.v3.sha" "{{env.GITHUB_API_URL}}/repos/{{env.GITHUB_REPOSITORY}}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')"
+          echo "LATEST_STABLE_VERSION=$(curl --silent --header "Accept: application/vnd.github.v3.sha" "{{env.GITHUB_API_URL}}/repos/{{env.GITHUB_REPOSITORY}}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')" >> $GITHUB_OUTPUT
 
       - name: Confirm release tag
         if: inputs.checkout-type  == 'latest-stable'
         run: |
-          echo "Latest Stable Release Tag: cho ${{ steps.latestrelease.outputs.releasetag }}"
+          echo "Latest Stable Release Tag: ${{ steps.latest-stable-version.outputs.LATEST_STABLE_VERSION }}"
         
       - name: Checkout latest stable tag
         if: inputs.checkout-type  == 'latest-stable'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          ref: ${{ steps.latestrelease.outputs.releasetag }}
+          ref: ${{ steps.latest-stable-version.outputs.LATEST_STABLE_VERSION }}
 
       ##
       # Echo the SHA
